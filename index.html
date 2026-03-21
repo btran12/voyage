@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NGM0C5RC5E"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NGM0C5RC5E');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voyage — International Travel Dashboard | Currency, Weather, Time & Visa</title>
+
+<!-- ── PRIMARY SEO ── -->
+<meta name="description" content="Voyage is a free international travel dashboard. Get real-time currency conversion, dual time zones, live weather, visa requirements, emergency numbers, plug adapters, and instant phrase translation for 19+ countries.">
+<meta name="keywords" content="international travel dashboard, currency converter, travel time zones, visa requirements, travel weather, travel phrases translator, plug adapter checker, emergency numbers abroad, travel tools, free travel app">
+<meta name="author" content="Voyage Travel Dashboard">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://btran12.github.io/voyage/index.html">
+
+<!-- ── OPEN GRAPH (Facebook, LinkedIn, iMessage previews) ── -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://btran12.github.io/voyage/index.html">
+<meta property="og:title" content="Voyage — International Travel Dashboard">
+<meta property="og:description" content="Free travel dashboard with real-time currency conversion, live weather, dual clocks, visa requirements, emergency numbers, and instant translation for 19+ countries.">
+<meta property="og:image" content="https://btran12.github.io/voyage/voyage-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Voyage Travel Dashboard">
+<meta property="og:locale" content="en_US">
+
+<!-- ── TWITTER CARD ── -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://btran12.github.io/voyage/index.html">
+<meta name="twitter:title" content="Voyage — International Travel Dashboard">
+<meta name="twitter:description" content="Free travel dashboard with real-time currency conversion, live weather, dual clocks, visa requirements, emergency numbers, and instant translation for 19+ countries.">
+<meta name="twitter:image" content="https://btran12.github.io/voyage/voyage-og.png">
+
+<!-- ── STRUCTURED DATA (Google Rich Results) ── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Voyage — International Travel Dashboard",
+  "url": "https://btran12.github.io/voyage/index.html",
+  "description": "A free international travel dashboard with real-time currency conversion, dual time zones, live weather, visa requirements, emergency numbers, plug adapter info, and instant translation for 19+ countries.",
+  "applicationCategory": "TravelApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Real-time currency conversion",
+    "Dual time zone clocks",
+    "Live weather for destination country",
+    "Visa requirement checker",
+    "Emergency numbers by country",
+    "Power plug and voltage guide",
+    "Essential travel phrases and translation",
+    "Packing tips"
+  ],
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "creator": {
+    "@type": "Person",
+    "name": "Bao Tran"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --surface: #ffffff;
+    --surface2: #f0ece3;
+    --border: rgba(0,0,0,0.09);
+    --accent: #9a6f2e;
+    --accent2: #2e7fa0;
+    --accent3: #3a8c3d;
+    --danger: #b04040;
+    --text: #1a1612;
+    --muted: #7a6e60;
+    --card-glow: rgba(154,111,46,0.05);
+    --grid-line: rgba(154,111,46,0.06);
+    --select-bg: #ffffff;
+    --transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+  }
+  html.dark {
+    --bg: #0a0c10;
+    --surface: #11141a;
+    --surface2: #181c24;
+    --border: rgba(255,255,255,0.07);
+    --accent: #c9a96e;
+    --accent2: #7eb8d4;
+    --accent3: #9ecfa0;
+    --danger: #d47e7e;
+    --text: #e8e4dc;
+    --muted: #6b7280;
+    --card-glow: rgba(201,169,110,0.06);
+    --grid-line: rgba(201,169,110,0.03);
+    --select-bg: #11141a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: var(--transition);
+  }
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+    transition: var(--transition);
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .logo span { font-style: italic; color: var(--text); }
+  .tagline {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── COUNTRY SELECTOR HERO ── */
+  .selector-hero {
+    position: relative;
+    z-index: 10;
+    padding: 48px 40px 36px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: end;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .country-block label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .country-select-wrapper {
+    position: relative;
+  }
+  .country-select-wrapper .flag {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    pointer-events: none;
+  }
+  .country-select-wrapper select {
+    width: 100%;
+    appearance: none;
+    background: var(--select-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    padding: 14px 40px 14px 48px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.35s ease, color 0.35s ease;
+  }
+  .country-select-wrapper select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .arrow-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 14px;
+  }
+  .arrow-icon {
+    font-size: 28px;
+    color: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .arrow-label { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+
+  /* ── DASHBOARD GRID ── */
+  .dashboard {
+    position: relative;
+    z-index: 10;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px 60px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s, background 0.35s ease;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-glow);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .card:hover { border-color: rgba(201,169,110,0.2); transform: translateY(-1px); }
+  .card:hover::before { opacity: 1; }
+  .card-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .card-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--text);
+  }
+  .card-value.mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 32px;
+    font-weight: 300;
+  }
+  .card-sub { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .accent { color: var(--accent); }
+  .accent2 { color: var(--accent2); }
+  .accent3 { color: var(--accent3); }
+
+  /* grid spans */
+  .span-4 { grid-column: span 4; }
+  .span-3 { grid-column: span 3; }
+  .span-6 { grid-column: span 6; }
+  .span-8 { grid-column: span 8; }
+  .span-12 { grid-column: span 12; }
+
+  /* ── CLOCK CARD ── */
+  .dual-clock {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: center;
+  }
+  .clock-face { text-align: center; }
+  .clock-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 36px;
+    font-weight: 300;
+    letter-spacing: 2px;
+  }
+  .clock-date { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .clock-city { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-top: 8px; }
+  .clock-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .clock-divider span { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+  .time-diff {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--accent);
+  }
+  @media (max-width: 540px) {
+    .dual-clock {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 0;
+    }
+    .clock-face { padding: 14px 0; }
+    .clock-face:first-child {
+      border-bottom: 1px solid var(--border);
+    }
+    .clock-time { font-size: 28px; }
+    .clock-divider {
+      flex-direction: row;
+      justify-content: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .clock-divider span:first-child { display: none; }
+    .clock-divider span:last-child { display: none; }
+  }
+
+  /* ── CURRENCY CARD ── */
+  .currency-converter {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .currency-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .currency-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    min-width: 36px;
+    font-weight: 400;
+  }
+  .currency-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 300;
+    outline: none;
+  }
+  .currency-name { font-size: 11px; color: var(--muted); }
+  .rate-line {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+  }
+  .swap-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    align-self: center;
+    transition: background 0.2s;
+    margin: 0 auto;
+  }
+  .swap-btn:hover { background: var(--surface2); }
+
+  /* ── WEATHER CARD ── */
+  .weather-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+  .weather-icon { font-size: 52px; line-height: 1; }
+  .weather-temp {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 300;
+  }
+  .weather-info { flex: 1; }
+  .weather-desc { font-size: 14px; color: var(--muted); text-transform: capitalize; }
+  .weather-loc { font-size: 11px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .weather-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .weather-stat {
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+  }
+  .weather-stat-val { font-family: 'DM Mono', monospace; font-size: 16px; color: var(--accent2); }
+  .weather-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ── PACKING LIST / TIPS ── */
+  .tips-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .tips-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .tips-list li .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── PHRASE CARD ── */
+  .phrase-grid { display: flex; flex-direction: column; gap: 10px; }
+  .phrase-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    gap: 12px;
+  }
+  .phrase-en { font-size: 12px; color: var(--muted); min-width: 100px; }
+  .phrase-local {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: var(--text);
+    text-align: right;
+  }
+  .phrase-pronun { font-size: 10px; color: var(--accent); font-style: italic; text-align: right; }
+
+  /* ── EMERGENCY CARD ── */
+  .emergency-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .emergency-item {
+    background: var(--surface2);
+    border: 1px solid rgba(212, 126, 126, 0.15);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .emergency-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    color: var(--danger);
+  }
+  .emergency-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+  /* ── VISA STATUS CARD ── */
+  .visa-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .visa-ok { background: rgba(158, 207, 160, 0.12); border: 1px solid rgba(158,207,160,0.3); color: var(--accent3); }
+  .visa-warn { background: rgba(201,169,110,0.12); border: 1px solid rgba(201,169,110,0.3); color: var(--accent); }
+  .visa-req { background: rgba(212,126,126,0.12); border: 1px solid rgba(212,126,126,0.3); color: var(--danger); }
+  .visa-details { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+  /* ── POWER / PLUG CARD ── */
+  .plug-info { display: flex; align-items: center; gap: 16px; }
+  .plug-icon { font-size: 40px; }
+  .plug-details { font-size: 13px; color: var(--muted); line-height: 1.8; }
+  .plug-highlight { color: var(--accent2); font-family: 'DM Mono', monospace; }
+
+  /* ── FLIGHT INFO ── */
+  .flight-bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+  .flight-airport { font-family: 'DM Mono', monospace; font-size: 30px; color: var(--accent); }
+  .flight-city { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .flight-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .flight-arrow { font-size: 20px; color: var(--accent2); }
+
+  /* ── LOADING ── */
+  .loading {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── SECTION DIVIDER ── */
+  .section-title {
+    grid-column: span 12;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .section-title::before, .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── UNIT TOGGLE ── */
+  .unit-toggle {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .unit-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .unit-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0a0c10;
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    grid-column: span 12;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); display: inline-block; margin-right: 4px; }
+
+  /* ── TRANSLATOR CARD ── */
+  .translator-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    padding: 14px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s, background 0.35s ease, color 0.35s ease;
+    min-height: 90px;
+  }
+  .translator-input:focus { border-color: var(--accent); }
+  .translator-input::placeholder { color: var(--muted); }
+  .translate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 11px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin: 10px 0;
+  }
+  html.dark .translate-btn { color: #0a0c10; }
+  .translate-btn:hover { opacity: 0.85; }
+  .translate-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .translator-result {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    min-height: 90px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.5;
+    position: relative;
+    transition: background 0.35s ease;
+  }
+  .translator-result.empty { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--muted); font-style: italic; }
+  .translator-lang-tag {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .translator-history {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+    max-height: 160px;
+    overflow-y: auto;
+  }
+  .history-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .history-item:hover { border-color: var(--accent); }
+  .history-en { font-size: 11px; color: var(--muted); }
+  .history-local { font-size: 14px; color: var(--text); font-family: 'Cormorant Garamond', serif; }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .theme-toggle-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    transition: color 0.35s ease;
+  }
+  .theme-switch {
+    position: relative;
+    width: 56px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .theme-switch input { display: none; }
+  .theme-switch-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: background 0.35s ease, border-color 0.35s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7px;
+    font-size: 12px;
+  }
+  .theme-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1), background 0.35s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  html.dark .theme-switch-thumb { transform: translateX(28px); }
+
+  @media (max-width: 900px) {
+    header { padding: 16px 20px; }
+    .selector-hero { padding: 24px 20px; grid-template-columns: 1fr; }
+    .arrow-block { display: none; }
+    .dashboard { padding: 0 20px 40px; }
+    .span-4, .span-3, .span-6, .span-8 { grid-column: span 12; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">V<span>oyage</span></div>
+  <div class="tagline">International Travel Dashboard</div>
+  <div style="display:flex;align-items:center;gap:20px">
+    <div class="theme-toggle">
+      <span class="theme-toggle-label" id="theme-label">Light</span>
+      <label class="theme-switch">
+        <input type="checkbox" id="theme-checkbox" onchange="toggleTheme(this.checked)">
+        <div class="theme-switch-track">
+          <span>🌙</span>
+          <span>☀️</span>
+        </div>
+        <div class="theme-switch-thumb"></div>
+      </label>
+    </div>
+    <div id="live-date" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)"></div>
+  </div>
+</header>
+
+<div class="selector-hero">
+  <div class="country-block">
+    <label>🏠 Your Home Country</label>
+    <div class="country-select-wrapper">
+      <span class="flag" id="home-flag">🏠</span>
+      <select id="home-country" onchange="updateDashboard()">
+        <!-- populated by JS -->
+      </select>
+    </div>
+  </div>
+  <div class="arrow-block">
+    <div class="arrow-icon">✈</div>
+    <div class="arrow-label">Traveling to</div>
+  </div>
+  <div class="country-block">
+    <label>📍 Visiting Country</label>
+    <div class="country-select-wrapper">
+      <span class="flag" id="visit-flag">📍</span>
+      <select id="visit-country" onchange="updateDashboard()">
+        <!-- populated by JS -->
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <!-- Populated dynamically -->
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════
+function toggleTheme(isDark) {
+  document.documentElement.classList.toggle('dark', isDark);
+  document.getElementById('theme-label').textContent = isDark ? 'Dark' : 'Light';
+  localStorage.setItem('voyage-theme', isDark ? 'dark' : 'light');
+}
+// Restore saved theme (default = light, no class needed)
+(function() {
+  const saved = localStorage.getItem('voyage-theme');
+  if (saved === 'dark') {
+    document.documentElement.classList.add('dark');
+    window.addEventListener('DOMContentLoaded', () => {
+      const cb = document.getElementById('theme-checkbox');
+      if (cb) { cb.checked = true; document.getElementById('theme-label').textContent = 'Dark'; }
+    });
+  }
+})();
+
+// ═══════════════════════════════════════
+// COUNTRY DATA
+// ═══════════════════════════════════════
+const COUNTRIES = [
+  { code: 'US', name: 'United States', flag: '🇺🇸', currency: 'USD', symbol: '$', tz: 'America/New_York', capital: 'Washington D.C.', lang: 'English', plug: 'A/B', voltage: '120V / 60Hz', plugIcon: '🔌', airport: 'JFK', visa: { default: 'voa', text: 'Visa on Arrival or ESTA for many nationalities. Citizens of VWP countries need ESTA ($21). Others may need B-2 visa.', days: 90 }, emergency: { police: '911', ambulance: '911', fire: '911', tourist: '1-800-USA-INFO' }, phrases: {}, drives: 'right' },
+  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧', currency: 'GBP', symbol: '£', tz: 'Europe/London', capital: 'London', lang: 'English', plug: 'G', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'LHR', visa: { default: 'voa', text: 'No visa required for most Western nationals. ETA required from 2025 for eligible nationalities (£10).', days: 180 }, emergency: { police: '999', ambulance: '999', fire: '999', tourist: '0800 400 900' }, phrases: { 'Hello': ['Hiya!', 'Hiya'], 'Thank you': ["Ta / Cheers", 'tah / cheerz'], 'Excuse me': ['Pardon', 'par-don'], 'Where is...': ['Where is...', 'wer-iz'] }, drives: 'left' },
+  { code: 'JP', name: 'Japan', flag: '🇯🇵', currency: 'JPY', symbol: '¥', tz: 'Asia/Tokyo', capital: 'Tokyo', lang: 'Japanese', plug: 'A/B', voltage: '100V / 50/60Hz', plugIcon: '🔌', airport: 'NRT', visa: { default: 'free', text: 'Visa-free for citizens of 68 countries for up to 90 days. Japan Tourist Tax of ¥1000 applies.', days: 90 }, emergency: { police: '110', ambulance: '119', fire: '119', tourist: '03-3503-4306' }, phrases: { 'Hello': ['こんにちは (Konnichiwa)', 'kon-ni-chi-wa'], 'Thank you': ['ありがとう (Arigatou)', 'a-ri-ga-toh'], 'Excuse me': ['すみません (Sumimasen)', 'su-mi-ma-sen'], 'Where is...': ['...はどこですか？', '...wa do-ko des-ka'] }, drives: 'left' },
+  { code: 'FR', name: 'France', flag: '🇫🇷', currency: 'EUR', symbol: '€', tz: 'Europe/Paris', capital: 'Paris', lang: 'French', plug: 'C/E', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'CDG', visa: { default: 'free', text: 'Schengen Area. No visa required for EU/EEA + many others up to 90 days in 180. ETIAS required from 2025 (€7).', days: 90 }, emergency: { police: '17', ambulance: '15', fire: '18', tourist: '3975' }, phrases: { 'Hello': ['Bonjour', 'bon-zhoor'], 'Thank you': ['Merci', 'mair-see'], 'Excuse me': ['Excusez-moi', 'ex-koo-zay mwah'], 'Where is...': ['Où est...?', 'oo-ay'] }, drives: 'right' },
+  { code: 'DE', name: 'Germany', flag: '🇩🇪', currency: 'EUR', symbol: '€', tz: 'Europe/Berlin', capital: 'Berlin', lang: 'German', plug: 'C/F', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'FRA', visa: { default: 'free', text: 'Schengen Area. Visa-free for many countries up to 90 days. ETIAS system launching soon.', days: 90 }, emergency: { police: '110', ambulance: '112', fire: '112', tourist: '030 25002333' }, phrases: { 'Hello': ['Guten Tag', 'goo-ten tahg'], 'Thank you': ['Danke', 'dan-keh'], 'Excuse me': ['Entschuldigung', 'ent-shool-dee-goong'], 'Where is...': ['Wo ist...?', 'vo-ist'] }, drives: 'right' },
+  { code: 'IT', name: 'Italy', flag: '🇮🇹', currency: 'EUR', symbol: '€', tz: 'Europe/Rome', capital: 'Rome', lang: 'Italian', plug: 'C/F/L', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'FCO', visa: { default: 'free', text: 'Schengen Area. Visa-free for 90 days for most nationalities. ETIAS required from 2025.', days: 90 }, emergency: { police: '113', ambulance: '118', fire: '115', tourist: '06 0608' }, phrases: { 'Hello': ['Ciao / Buongiorno', 'chow / bwon-jor-no'], 'Thank you': ['Grazie', 'gra-tsee-ay'], 'Excuse me': ['Scusi', 'skoo-zee'], 'Where is...': ['Dov\'è...?', 'dov-eh'] }, drives: 'right' },
+  { code: 'ES', name: 'Spain', flag: '🇪🇸', currency: 'EUR', symbol: '€', tz: 'Europe/Madrid', capital: 'Madrid', lang: 'Spanish', plug: 'C/F', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'MAD', visa: { default: 'free', text: 'Schengen Area. Visa-free for many nationalities for up to 90 days. ETIAS launching 2025.', days: 90 }, emergency: { police: '091', ambulance: '061', fire: '080', tourist: '010' }, phrases: { 'Hello': ['Hola', 'oh-lah'], 'Thank you': ['Gracias', 'gra-see-as'], 'Excuse me': ['Perdón', 'pair-don'], 'Where is...': ['¿Dónde está...?', 'don-day es-ta'] }, drives: 'right' },
+  { code: 'AU', name: 'Australia', flag: '🇦🇺', currency: 'AUD', symbol: 'A$', tz: 'Australia/Sydney', capital: 'Canberra', lang: 'English', plug: 'I', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'SYD', visa: { default: 'req', text: 'Electronic Travel Authority (ETA) required for most nationalities. Apply via Australian ETA app (~A$20). No ETA needed for NZ citizens.', days: 90 }, emergency: { police: '000', ambulance: '000', fire: '000', tourist: '1300 555 135' }, phrases: {}, drives: 'left' },
+  { code: 'CA', name: 'Canada', flag: '🇨🇦', currency: 'CAD', symbol: 'C$', tz: 'America/Toronto', capital: 'Ottawa', lang: 'English/French', plug: 'A/B', voltage: '120V / 60Hz', plugIcon: '🔌', airport: 'YYZ', visa: { default: 'voa', text: 'eTA required for visa-exempt foreign nationals flying to Canada (CAD $7). US citizens exempt. No visa for many countries.', days: 180 }, emergency: { police: '911', ambulance: '911', fire: '911', tourist: '1-800-267-8376' }, phrases: {}, drives: 'right' },
+  { code: 'TH', name: 'Thailand', flag: '🇹🇭', currency: 'THB', symbol: '฿', tz: 'Asia/Bangkok', capital: 'Bangkok', lang: 'Thai', plug: 'A/B/C', voltage: '220V / 50Hz', plugIcon: '🔌', airport: 'BKK', visa: { default: 'free', text: 'Visa Exemption for 93 countries for 60 days (extendable). Thailand has expanded its visa-free policy significantly in 2024-2025.', days: 60 }, emergency: { police: '191', ambulance: '1669', fire: '199', tourist: '1155' }, phrases: { 'Hello': ['สวัสดี (Sawasdee)', 'sa-wad-dee'], 'Thank you': ['ขอบคุณ (Khob Khun)', 'kob-koon'], 'Excuse me': ['ขอโทษ (Kho Thot)', 'kor-tot'], 'Where is...': ['...อยู่ที่ไหน?', '...yoo tee nai'] }, drives: 'left' },
+  { code: 'VN', name: 'Vietnam', flag: '🇻🇳', currency: 'VND', symbol: '₫', tz: 'Asia/Ho_Chi_Minh', capital: 'Hanoi', lang: 'Vietnamese', plug: 'A/C/F', voltage: '220V / 50Hz', plugIcon: '🔌', airport: 'SGN', visa: { default: 'voa', text: 'E-visa ($25) available to 80+ nationalities for 90 days. Visa-free for 45 days for citizens of select countries including Germany, France, UK, Italy, Spain, Japan, South Korea.', days: 90 }, emergency: { police: '113', ambulance: '115', fire: '114', tourist: '024 3942 5678' }, phrases: { 'Hello': ['Xin chào', 'sin chow'], 'Thank you': ['Cảm ơn', 'gam un'], 'Excuse me': ['Xin lỗi', 'sin loy'], 'Where is...': ['...ở đâu?', '...uh dow'] }, drives: 'right' },
+  { code: 'SG', name: 'Singapore', flag: '🇸🇬', currency: 'SGD', symbol: 'S$', tz: 'Asia/Singapore', capital: 'Singapore', lang: 'English/Mandarin/Malay/Tamil', plug: 'G', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'SIN', visa: { default: 'free', text: 'Visa-free for most nationalities for 30-90 days. Singapore has mutual visa-free agreements with 165+ countries.', days: 30 }, emergency: { police: '999', ambulance: '995', fire: '995', tourist: '1800 736 2000' }, phrases: { 'Hello': ['Hello / Eh!', 'lah!'], 'Thank you': ['Thank you lah', 'tank yoo lah'], 'Excuse me': ['Sorry leh', 'sor-ree leh'], 'Where is...': ['Where got...?', 'wair got'] }, drives: 'left' },
+  { code: 'MX', name: 'Mexico', flag: '🇲🇽', currency: 'MXN', symbol: 'MX$', tz: 'America/Mexico_City', capital: 'Mexico City', lang: 'Spanish', plug: 'A/B', voltage: '127V / 60Hz', plugIcon: '🔌', airport: 'MEX', visa: { default: 'free', text: 'No visa required for citizens of 68 countries. Electronic Authorization (AEM) may be required. US/EU/UK citizens: visa-free up to 180 days.', days: 180 }, emergency: { police: '911', ambulance: '911', fire: '911', tourist: '800 987 8224' }, phrases: { 'Hello': ['¡Hola!', 'oh-lah'], 'Thank you': ['Gracias', 'gra-see-as'], 'Excuse me': ['Perdón', 'pair-don'], 'Where is...': ['¿Dónde está...?', 'don-day es-ta'] }, drives: 'right' },
+  { code: 'IN', name: 'India', flag: '🇮🇳', currency: 'INR', symbol: '₹', tz: 'Asia/Kolkata', capital: 'New Delhi', lang: 'Hindi / English', plug: 'C/D/M', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'DEL', visa: { default: 'voa', text: 'e-Visa required for most nationalities. Apply online ($25–$100). Valid for 30-365 days. Visa on Arrival at select airports.', days: 60 }, emergency: { police: '100', ambulance: '102', fire: '101', tourist: '1800 11 1363' }, phrases: { 'Hello': ['नमस्ते (Namaste)', 'na-mas-tay'], 'Thank you': ['धन्यवाद (Dhanyavaad)', 'dhan-ya-vaad'], 'Excuse me': ['माफ़ करें (Maaf Karen)', 'maaf ka-rain'], 'Where is...': ['...कहाँ है? (Kahan hai?)', '...ka-han hai'] }, drives: 'left' },
+  { code: 'BR', name: 'Brazil', flag: '🇧🇷', currency: 'BRL', symbol: 'R$', tz: 'America/Sao_Paulo', capital: 'Brasília', lang: 'Portuguese', plug: 'N', voltage: '127/220V / 60Hz', plugIcon: '🔌', airport: 'GRU', visa: { default: 'free', text: 'Visa-free for US, EU, UK, and many others for up to 90 days. Brazil reinstated visa-free access for US citizens in 2024.', days: 90 }, emergency: { police: '190', ambulance: '192', fire: '193', tourist: '0800 023 0023' }, phrases: { 'Hello': ['Olá', 'oh-lah'], 'Thank you': ['Obrigado/a', 'ob-ree-GAH-do'], 'Excuse me': ['Com licença', 'com lee-SEN-sa'], 'Where is...': ['Onde fica...?', 'on-jee FEE-ka'] }, drives: 'right' },
+  { code: 'AE', name: 'UAE', flag: '🇦🇪', currency: 'AED', symbol: 'د.إ', tz: 'Asia/Dubai', capital: 'Abu Dhabi', lang: 'Arabic / English', plug: 'G', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'DXB', visa: { default: 'voa', text: 'Visa on Arrival for 50+ nationalities for 30 days (extendable). Free Visa on Arrival for US, UK, EU, AU citizens and many more.', days: 30 }, emergency: { police: '999', ambulance: '998', fire: '997', tourist: '800 DUBAI' }, phrases: { 'Hello': ['مرحبا (Marhaba)', 'mar-ha-ba'], 'Thank you': ['شكراً (Shukran)', 'shuk-ran'], 'Excuse me': ['عفواً (Afwan)', 'af-wan'], 'Where is...': ['أين...؟ (Ayna?)', 'ay-na'] }, drives: 'right' },
+  { code: 'KR', name: 'South Korea', flag: '🇰🇷', currency: 'KRW', symbol: '₩', tz: 'Asia/Seoul', capital: 'Seoul', lang: 'Korean', plug: 'C/F', voltage: '220V / 60Hz', plugIcon: '🔌', airport: 'ICN', visa: { default: 'free', text: 'K-ETA required for visa-exempt countries (₩10,000). 90-day visa-free for 112 countries. K-ETA temporarily waived for many nationalities.', days: 90 }, emergency: { police: '112', ambulance: '119', fire: '119', tourist: '1330' }, phrases: { 'Hello': ['안녕하세요 (Annyeonghaseyo)', 'an-nyong-ha-se-yo'], 'Thank you': ['감사합니다 (Gamsahamnida)', 'gam-sa-ham-ni-da'], 'Excuse me': ['저기요 (Jeogiyo)', 'jeo-gi-yo'], 'Where is...': ['...어디예요?', '...eo-di-ye-yo'] }, drives: 'right' },
+  { code: 'NL', name: 'Netherlands', flag: '🇳🇱', currency: 'EUR', symbol: '€', tz: 'Europe/Amsterdam', capital: 'Amsterdam', lang: 'Dutch', plug: 'C/F', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'AMS', visa: { default: 'free', text: 'Schengen Area. Visa-free for 90 days for most nationalities. ETIAS required from 2025 (€7).', days: 90 }, emergency: { police: '112', ambulance: '112', fire: '112', tourist: '0900 400 4040' }, phrases: { 'Hello': ['Hallo', 'hal-oh'], 'Thank you': ['Dank je', 'dank yuh'], 'Excuse me': ['Pardon', 'par-don'], 'Where is...': ['Waar is...?', 'var is'] }, drives: 'right' },
+  { code: 'CH', name: 'Switzerland', flag: '🇨🇭', currency: 'CHF', symbol: 'Fr', tz: 'Europe/Zurich', capital: 'Bern', lang: 'German/French/Italian', plug: 'J', voltage: '230V / 50Hz', plugIcon: '🔌', airport: 'ZRH', visa: { default: 'free', text: 'Schengen member. Visa-free for 90 days. Note: uses Swiss Franc (CHF), not Euro.', days: 90 }, emergency: { police: '117', ambulance: '144', fire: '118', tourist: '0800 100 200 30' }, phrases: { 'Hello': ['Grüezi', 'groo-et-zi'], 'Thank you': ['Merci / Danke', 'mair-see / dan-keh'], 'Excuse me': ['Entschuldigung', 'ent-shool-dee-goong'], 'Where is...': ['Wo ist...?', 'vo ist'] }, drives: 'right' },
+];
+
+// Exchange rates (base: USD) — approximate
+const RATES_USD = {
+  USD: 1, GBP: 0.79, EUR: 0.92, JPY: 149, CAD: 1.36, AUD: 1.53, CHF: 0.89,
+  SGD: 1.35, THB: 35, VND: 24500, INR: 83, BRL: 4.97, AED: 3.67, KRW: 1320, MXN: 17.1,
+};
+
+function getRate(fromCur, toCur) {
+  const f = RATES_USD[fromCur] || 1;
+  const t = RATES_USD[toCur] || 1;
+  return t / f;
+}
+
+// Visa rules simplified
+function getVisaStatus(home, visit) {
+  if (home.code === visit.code) return { cls: 'visa-ok', icon: '✓', text: 'You are home!', detail: '' };
+  const v = visit.visa;
+  // Some hardcoded logic
+  const freeFromUS = ['FR','DE','IT','ES','GB','JP','AU','CA','MX','BR','NL','CH','SG','KR','VN','TH','AE'];
+  const freeFromGB = ['FR','DE','IT','ES','JP','AU','CA','NL','CH','SG','KR','VN','TH','AE','BR','MX'];
+  const requiresFromAll = [];
+
+  if (v.default === 'free') {
+    return { cls: 'visa-ok', icon: '✓', text: 'Visa Not Required', detail: v.text };
+  } else if (v.default === 'voa') {
+    return { cls: 'visa-warn', icon: '⚡', text: 'Visa / ETA Required', detail: v.text };
+  } else {
+    return { cls: 'visa-req', icon: '⚠', text: 'Visa Required', detail: v.text };
+  }
+}
+
+// ═══════════════════════════════════════
+// WEATHER (OpenMeteo — free, no key)
+// ═══════════════════════════════════════
+const CITY_COORDS = {
+  US: { lat: 40.71, lon: -74.01, city: 'New York' },
+  GB: { lat: 51.51, lon: -0.13, city: 'London' },
+  JP: { lat: 35.68, lon: 139.69, city: 'Tokyo' },
+  FR: { lat: 48.85, lon: 2.35, city: 'Paris' },
+  DE: { lat: 52.52, lon: 13.40, city: 'Berlin' },
+  IT: { lat: 41.90, lon: 12.50, city: 'Rome' },
+  ES: { lat: 40.42, lon: -3.70, city: 'Madrid' },
+  AU: { lat: -33.87, lon: 151.21, city: 'Sydney' },
+  CA: { lat: 43.65, lon: -79.38, city: 'Toronto' },
+  TH: { lat: 13.76, lon: 100.50, city: 'Bangkok' },
+  VN: { lat: 10.82, lon: 106.63, city: 'Ho Chi Minh City' },
+  SG: { lat: 1.35, lon: 103.82, city: 'Singapore' },
+  MX: { lat: 19.43, lon: -99.13, city: 'Mexico City' },
+  IN: { lat: 28.61, lon: 77.21, city: 'New Delhi' },
+  BR: { lat: -23.55, lon: -46.63, city: 'São Paulo' },
+  AE: { lat: 25.20, lon: 55.27, city: 'Dubai' },
+  KR: { lat: 37.57, lon: 126.98, city: 'Seoul' },
+  NL: { lat: 52.37, lon: 4.90, city: 'Amsterdam' },
+  CH: { lat: 47.38, lon: 8.54, city: 'Zurich' },
+};
+
+const WMO_ICONS = {
+  0:'☀️', 1:'🌤', 2:'⛅', 3:'☁️',
+  45:'🌫', 48:'🌫',
+  51:'🌦', 53:'🌦', 55:'🌧',
+  61:'🌧', 63:'🌧', 65:'🌧',
+  71:'🌨', 73:'🌨', 75:'❄️',
+  80:'🌦', 81:'🌦', 82:'⛈',
+  95:'⛈', 96:'⛈', 99:'⛈',
+};
+const WMO_DESC = {
+  0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
+  45:'Foggy',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
+  61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',
+  80:'Showers',81:'Rain showers',82:'Violent showers',95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Thunderstorm w/ heavy hail',
+};
+
+let weatherData = null;
+let weatherUnit = 'C';
+
+async function fetchWeather(countryCode) {
+  const coord = CITY_COORDS[countryCode];
+  if (!coord) return null;
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lon}&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`;
+    const r = await fetch(url);
+    const d = await r.json();
+    return { ...d, city: coord.city };
+  } catch { return null; }
+}
+
+function cToF(c) { return Math.round(c * 9/5 + 32); }
+function displayTemp(c) { return weatherUnit === 'C' ? `${Math.round(c)}°C` : `${cToF(c)}°F`; }
+
+// ═══════════════════════════════════════
+// CLOCKS
+// ═══════════════════════════════════════
+function formatTime(tz) {
+  try {
+    return new Date().toLocaleTimeString('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  } catch { return '--:--:--'; }
+}
+function formatDate(tz) {
+  try {
+    return new Date().toLocaleDateString('en-US', { timeZone: tz, weekday: 'long', month: 'short', day: 'numeric' });
+  } catch { return ''; }
+}
+function getTimeDiff(tz1, tz2) {
+  try {
+    const now = new Date();
+    const t1 = new Date(now.toLocaleString('en-US', { timeZone: tz1 }));
+    const t2 = new Date(now.toLocaleString('en-US', { timeZone: tz2 }));
+    const diffH = (t2 - t1) / 3600000;
+    const h = Math.round(diffH);
+    if (h === 0) return 'Same time';
+    return `${h > 0 ? '+' : ''}${h}h`;
+  } catch { return '?'; }
+}
+
+// ═══════════════════════════════════════
+// CURRENCY
+// ═══════════════════════════════════════
+let homeAmount = 100;
+let swapped = false;
+
+function convertCurrency() {
+  const home = getHome(), visit = getVisit();
+  const fromCur = swapped ? visit.currency : home.currency;
+  const toCur = swapped ? home.currency : visit.currency;
+  const rate = getRate(fromCur, toCur);
+  const el = document.getElementById('currency-result');
+  if (el) el.value = (homeAmount * rate).toFixed(2);
+}
+
+// ═══════════════════════════════════════
+// PACKING TIPS
+// ═══════════════════════════════════════
+function getPackingTips(home, visit) {
+  const tips = [];
+  // Plug adapter
+  if (home.plug !== visit.plug) tips.push(`Bring a Type ${visit.plug} plug adapter — plugs differ from home.`);
+  // Voltage
+  const homeV = parseInt(home.voltage); const visitV = parseInt(visit.voltage);
+  if (Math.abs(homeV - visitV) > 20) tips.push(`Check device compatibility — ${visit.name} uses ${visit.voltage}.`);
+  // Driving
+  if (home.drives !== visit.drives) tips.push(`Traffic drives on the ${visit.drives} — stay alert when crossing roads.`);
+  // Climate tips based on country
+  const tropical = ['TH','VN','SG','IN','BR','MX'];
+  const cold = ['JP','CA','DE','CH','NO'];
+  if (tropical.includes(visit.code)) tips.push('Pack lightweight, breathable clothing. Humidity can be high.');
+  if (cold.includes(visit.code)) tips.push('Layer up — temperatures can drop significantly, especially at night.');
+  // Language
+  if (home.lang !== visit.lang && visit.lang !== 'English') tips.push(`Learn basic ${visit.lang} phrases — locals appreciate the effort!`);
+  // Currency cash
+  tips.push(`Keep some ${visit.currency} cash handy — not all venues accept cards.`);
+  tips.push('Store passport/visa copies in cloud storage as a backup.');
+  tips.push('Check travel insurance coverage before departure.');
+  if (tips.length < 4) tips.push('Download offline maps for the destination city.');
+  return tips.slice(0, 6);
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function getHome() { return COUNTRIES.find(c => c.code === document.getElementById('home-country').value) || COUNTRIES[0]; }
+function getVisit() { return COUNTRIES.find(c => c.code === document.getElementById('visit-country').value) || COUNTRIES[2]; }
+
+function buildDashboard(weather) {
+  const home = getHome(), visit = getVisit();
+  const visa = getVisaStatus(home, visit);
+  const tips = getPackingTips(home, visit);
+  const rate = getRate(home.currency, visit.currency);
+  const rateDisplay = rate >= 1000 ? rate.toFixed(0) : rate >= 100 ? rate.toFixed(1) : rate.toFixed(4);
+  const phrases = visit.phrases && Object.keys(visit.phrases).length > 0 ? visit.phrases : null;
+
+  // Weather render
+  let weatherHTML = `<div class="loading">Fetching weather…</div>`;
+  if (weather) {
+    const c = weather.current;
+    const wcode = c.weathercode;
+    const icon = WMO_ICONS[wcode] || '🌡';
+    const desc = WMO_DESC[wcode] || 'Unknown';
+    const temp = c.temperature_2m;
+    weatherHTML = `
+      <div class="weather-main">
+        <div class="weather-icon">${icon}</div>
+        <div>
+          <div class="weather-loc">${weather.city}</div>
+          <div class="weather-temp">${displayTemp(temp)}</div>
+          <div class="weather-desc">${desc}</div>
+        </div>
+        <div style="margin-left:auto">
+          <div class="unit-toggle">
+            <button class="unit-btn ${weatherUnit==='C'?'active':''}" onclick="weatherUnit='C';updateWeatherDisplay(${temp},${c.windspeed_10m},${c.relativehumidity_2m})">°C</button>
+            <button class="unit-btn ${weatherUnit==='F'?'active':''}" onclick="weatherUnit='F';updateWeatherDisplay(${temp},${c.windspeed_10m},${c.relativehumidity_2m})">°F</button>
+          </div>
+        </div>
+      </div>
+      <div class="weather-stats" id="weather-stats">
+        <div class="weather-stat"><div class="weather-stat-val">${c.windspeed_10m} km/h</div><div class="weather-stat-label">Wind</div></div>
+        <div class="weather-stat"><div class="weather-stat-val">${c.relativehumidity_2m}%</div><div class="weather-stat-label">Humidity</div></div>
+        <div class="weather-stat"><div class="weather-stat-val" id="temp-feel">${displayTemp(temp - 2)}</div><div class="weather-stat-label">Feels Like</div></div>
+      </div>
+    `;
+    window._lastWeather = { temp, wind: c.windspeed_10m, humid: c.relativehumidity_2m };
+  } else {
+    weatherHTML = `<div style="color:var(--muted);font-size:13px">⚠ Weather unavailable. Check your connection.</div>`;
+  }
+
+  // Phrases
+  const phrasesHTML = phrases ? Object.entries(phrases).map(([en, [local, pronun]]) => `
+    <div class="phrase-row">
+      <div class="phrase-en">${en}</div>
+      <div>
+        <div class="phrase-local">${local}</div>
+        <div class="phrase-pronun">${pronun}</div>
+      </div>
+    </div>
+  `).join('') : `<div style="color:var(--muted);font-size:13px">English is widely spoken or phrases not available for this destination.</div>`;
+
+  const timeDiff = getTimeDiff(home.tz, visit.tz);
+
+  document.getElementById('dashboard').innerHTML = `
+    <!-- Clocks -->
+    <div class="section-title">Time & Location</div>
+    <div class="card span-8">
+      <div class="card-label">Dual Time</div>
+      <div class="dual-clock">
+        <div class="clock-face">
+          <div class="clock-time accent" id="home-clock">${formatTime(home.tz)}</div>
+          <div class="clock-date" id="home-date">${formatDate(home.tz)}</div>
+          <div class="clock-city">${home.flag} ${home.name}</div>
+        </div>
+        <div class="clock-divider">
+          <span>DIFF</span>
+          <div class="time-diff">${timeDiff}</div>
+          <span>ahead</span>
+        </div>
+        <div class="clock-face">
+          <div class="clock-time accent2" id="visit-clock">${formatTime(visit.tz)}</div>
+          <div class="clock-date" id="visit-date">${formatDate(visit.tz)}</div>
+          <div class="clock-city">${visit.flag} ${visit.name}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flight snippet -->
+    <div class="card span-4">
+      <div class="card-label">Route Overview</div>
+      <div class="flight-bar">
+        <div>
+          <div class="flight-airport">${home.airport}</div>
+          <div class="flight-city">${home.capital}</div>
+        </div>
+        <div class="flight-line">
+          <div class="flight-arrow">✈ ━━━</div>
+          <div>${home.flag} → ${visit.flag}</div>
+        </div>
+        <div>
+          <div class="flight-airport">${visit.airport}</div>
+          <div class="flight-city">${visit.capital}</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:11px;color:var(--muted);text-align:center">Major international airports shown</div>
+    </div>
+
+    <!-- Currency -->
+    <div class="section-title">Money & Exchange</div>
+    <div class="card span-4">
+      <div class="card-label">Currency Converter</div>
+      <div class="currency-converter">
+        <div class="currency-row">
+          <div>
+            <div class="currency-code">${swapped ? visit.currency : home.currency}</div>
+            <div class="currency-name">${swapped ? visit.name : home.name}</div>
+          </div>
+          <input class="currency-input" id="currency-from" type="number" value="${homeAmount}" oninput="homeAmount=parseFloat(this.value)||0;convertCurrency()">
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rate-line" style="flex:1">1 ${swapped?visit.currency:home.currency} = ${rateDisplay} ${swapped?home.currency:visit.currency}</div>
+          <button class="swap-btn" onclick="swapped=!swapped;updateDashboard()" title="Swap currencies">⇅</button>
+        </div>
+        <div class="currency-row">
+          <div>
+            <div class="currency-code">${swapped ? home.currency : visit.currency}</div>
+            <div class="currency-name">${swapped ? home.name : visit.name}</div>
+          </div>
+          <input class="currency-input" id="currency-result" type="number" value="${(homeAmount * rate).toFixed(2)}" readonly>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick amounts -->
+    <div class="card span-4">
+      <div class="card-label">Quick Reference — ${home.currency} → ${visit.currency}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${[10,20,50,100,200,500].map(amt => {
+          const converted = (amt * rate);
+          const display = converted >= 1000 ? (converted/1000).toFixed(1)+'K' : converted >= 10 ? converted.toFixed(0) : converted.toFixed(2);
+          return `<div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border-radius:6px;padding:8px 12px">
+            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted)">${home.symbol}${amt}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent)">${visit.symbol}${display}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Visa -->
+    <div class="card span-4">
+      <div class="card-label">Visa Status</div>
+      <div class="visa-badge ${visa.cls}">${visa.icon} ${visa.text}</div>
+      <div class="visa-details">${visa.detail}</div>
+      ${visa.days ? `<div style="margin-top:12px;font-size:11px;color:var(--accent2)">📅 Stay up to: <strong>${visa.days} days</strong></div>` : ''}
+    </div>
+
+    <!-- Weather -->
+    <div class="section-title">Weather & Environment</div>
+    <div class="card span-6" id="weather-card">
+      <div class="card-label">Current Weather — ${visit.name}</div>
+      ${weatherHTML}
+    </div>
+
+    <!-- Power -->
+    <div class="card span-3">
+      <div class="card-label">Power & Plug</div>
+      <div class="plug-info">
+        <div class="plug-icon">🔌</div>
+        <div class="plug-details">
+          Type: <span class="plug-highlight">${visit.plug}</span><br>
+          Voltage: <span class="plug-highlight">${visit.voltage}</span><br>
+          ${home.plug !== visit.plug ? `⚠ <span style="color:var(--danger)">Adapter needed</span>` : `✓ <span style="color:var(--accent3)">Compatible</span>`}<br>
+          ${parseInt(home.voltage) !== parseInt(visit.voltage) ? `⚡ <span style="color:var(--accent)">Check converter</span>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <!-- Driving -->
+    <div class="card span-3">
+      <div class="card-label">Driving Side</div>
+      <div style="text-align:center;padding:10px 0">
+        <div style="font-size:40px">${visit.drives === 'right' ? '🚗➡' : '⬅🚗'}</div>
+        <div style="font-size:13px;color:var(--text);margin-top:12px">Drives on the <span class="accent">${visit.drives}</span></div>
+        ${home.drives !== visit.drives ? `<div style="font-size:11px;color:var(--danger);margin-top:8px">⚠ Opposite to home — take care</div>` : `<div style="font-size:11px;color:var(--accent3);margin-top:8px">✓ Same as home</div>`}
+      </div>
+    </div>
+
+    <!-- Emergency -->
+    <div class="section-title">Safety & Communication</div>
+    <div class="card span-4">
+      <div class="card-label">Emergency Numbers</div>
+      <div class="emergency-grid">
+        <div class="emergency-item"><div class="emergency-num">${visit.emergency.police}</div><div class="emergency-label">Police</div></div>
+        <div class="emergency-item"><div class="emergency-num">${visit.emergency.ambulance}</div><div class="emergency-label">Ambulance</div></div>
+        <div class="emergency-item"><div class="emergency-num">${visit.emergency.fire}</div><div class="emergency-label">Fire</div></div>
+        <div class="emergency-item"><div class="emergency-num">${visit.emergency.tourist}</div><div class="emergency-label">Tourist Helpline</div></div>
+      </div>
+    </div>
+
+    <!-- Phrases -->
+    <div class="card span-4">
+      <div class="card-label">Essential Phrases — ${visit.lang}</div>
+      <div class="phrase-grid">${phrasesHTML}</div>
+    </div>
+
+    <!-- Packing Tips -->
+    <div class="card span-4">
+      <div class="card-label">Packing & Travel Tips</div>
+      <ul class="tips-list">
+        ${tips.map(t => `<li><span class="dot"></span>${t}</li>`).join('')}
+      </ul>
+    </div>
+
+    <!-- Translator -->
+    <div class="section-title">Translator</div>
+    <div class="card span-6">
+      <div class="card-label">Type & Translate — English → ${visit.lang}</div>
+      <textarea class="translator-input" id="translate-input" placeholder="Type anything in English… e.g. Where is the nearest pharmacy?" maxlength="500"></textarea>
+      <button class="translate-btn" id="translate-btn" onclick="doTranslate()">
+        <span>↓</span> Translate to ${visit.lang}
+      </button>
+      <div class="translator-result empty" id="translate-output">
+        Translation will appear here…
+      </div>
+    </div>
+
+    <!-- Translation History -->
+    <div class="card span-6">
+      <div class="card-label">Recent Translations</div>
+      <div class="translator-history" id="translation-history">
+        <div style="font-size:12px;color:var(--muted);font-style:italic">Your translations will appear here.</div>
+      </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span><span class="status-dot"></span>Live rates (approximate)</span>
+      <span>Weather via Open-Meteo</span>
+      <span>Translation via MyMemory</span>
+      <span>Always verify visa rules with official embassy</span>
+      <span style="margin-left:auto">${home.flag} ${home.name} → ${visit.flag} ${visit.name}</span>
+    </div>
+  `;
+}
+
+function updateWeatherDisplay(temp, wind, humid) {
+  // update unit toggle buttons
+  document.querySelectorAll('.unit-btn').forEach((btn, i) => {
+    btn.className = 'unit-btn' + (i === (weatherUnit==='C'?0:1) ? ' active' : '');
+  });
+  document.querySelectorAll('.weather-stat-val')[0] && (document.querySelectorAll('.weather-stat-val')[0].textContent = `${wind} km/h`);
+  document.querySelectorAll('.weather-stat-val')[1] && (document.querySelectorAll('.weather-stat-val')[1].textContent = `${humid}%`);
+  document.querySelectorAll('.weather-stat-val')[2] && (document.querySelectorAll('.weather-stat-val')[2].textContent = displayTemp(temp - 2));
+  const tempEl = document.querySelector('.weather-temp');
+  if (tempEl) tempEl.textContent = displayTemp(temp);
+}
+
+// ═══════════════════════════════════════
+// TRANSLATION
+// ═══════════════════════════════════════
+const LANG_CODES = {
+  US: 'en', GB: 'en', AU: 'en', CA: 'en',
+  JP: 'ja', FR: 'fr', DE: 'de', IT: 'it', ES: 'es',
+  TH: 'th', VN: 'vi', SG: 'zh', MX: 'es', IN: 'hi',
+  BR: 'pt', AE: 'ar', KR: 'ko', NL: 'nl', CH: 'de',
+};
+
+let translationHistory = [];
+
+async function doTranslate() {
+  const input = document.getElementById('translate-input');
+  const output = document.getElementById('translate-output');
+  const btn = document.getElementById('translate-btn');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const visit = getVisit();
+  const targetLang = LANG_CODES[visit.code] || 'en';
+  if (targetLang === 'en') {
+    output.className = 'translator-result';
+    output.innerHTML = `<span class="translator-lang-tag">Note</span>The destination language is English — no translation needed!`;
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span style="animation:blink 0.8s infinite;display:inline-block">⏳</span> Translating…';
+  output.className = 'translator-result empty';
+  output.textContent = 'Translating…';
+
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const translated = data.responseData?.translatedText;
+
+    if (translated && data.responseStatus === 200) {
+      output.className = 'translator-result';
+      output.innerHTML = `
+        <span class="translator-lang-tag">${visit.lang}</span>
+        <span id="translated-text">${translated}</span>
+        <button class="copy-btn" onclick="copyTranslation()" title="Copy">⎘ Copy</button>
+      `;
+      // Add to history
+      translationHistory.unshift({ en: text, local: translated, lang: visit.lang });
+      if (translationHistory.length > 10) translationHistory.pop();
+      renderHistory();
+    } else {
+      output.className = 'translator-result empty';
+      output.textContent = '⚠ Translation failed. Try again or check your connection.';
+    }
+  } catch {
+    output.className = 'translator-result empty';
+    output.textContent = '⚠ Could not reach translation service. Check your connection.';
+  }
+
+  btn.disabled = false;
+  const visit2 = getVisit();
+  btn.innerHTML = `<span>↓</span> Translate to ${visit2.lang}`;
+}
+
+function copyTranslation() {
+  const el = document.getElementById('translated-text');
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = '⎘ Copy', 1500); }
+  });
+}
+
+function renderHistory() {
+  const el = document.getElementById('translation-history');
+  if (!el || translationHistory.length === 0) return;
+  el.innerHTML = translationHistory.map((item, i) => `
+    <div class="history-item" onclick="reuseTranslation(${i})">
+      <div class="history-en">${item.en}</div>
+      <div class="history-local">${item.local} <span style="font-size:10px;color:var(--muted);font-family:'Outfit',sans-serif">(${item.lang})</span></div>
+    </div>
+  `).join('');
+}
+
+function reuseTranslation(i) {
+  const item = translationHistory[i];
+  if (!item) return;
+  const input = document.getElementById('translate-input');
+  if (input) input.value = item.en;
+}
+
+// Allow Ctrl+Enter / Cmd+Enter to translate
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    const input = document.getElementById('translate-input');
+    if (document.activeElement === input) doTranslate();
+  }
+});
+
+
+async function updateDashboard() {
+  const home = getHome(), visit = getVisit();
+  document.getElementById('home-flag').textContent = home.flag;
+  document.getElementById('visit-flag').textContent = visit.flag;
+  // Persist selections
+  localStorage.setItem('voyage-home', home.code);
+  localStorage.setItem('voyage-visit', visit.code);
+  weatherData = null;
+  buildDashboard(null);
+  const weather = await fetchWeather(visit.code);
+  weatherData = weather;
+  buildDashboard(weather);
+}
+
+// ── POPULATE SELECTS
+function populateSelects() {
+  const sorted = [...COUNTRIES].sort((a,b) => a.name.localeCompare(b.name));
+  const homeEl = document.getElementById('home-country');
+  const visitEl = document.getElementById('visit-country');
+  sorted.forEach(c => {
+    homeEl.innerHTML += `<option value="${c.code}">${c.flag} ${c.name}</option>`;
+    visitEl.innerHTML += `<option value="${c.code}">${c.flag} ${c.name}</option>`;
+  });
+  // Restore saved selections, fall back to defaults
+  const savedHome = localStorage.getItem('voyage-home');
+  const savedVisit = localStorage.getItem('voyage-visit');
+  homeEl.value = (savedHome && COUNTRIES.find(c => c.code === savedHome)) ? savedHome : 'US';
+  visitEl.value = (savedVisit && COUNTRIES.find(c => c.code === savedVisit)) ? savedVisit : 'VN';
+}
+
+// ── CLOCK TICK
+function tickClocks() {
+  const homeClk = document.getElementById('home-clock');
+  const visitClk = document.getElementById('visit-clock');
+  const homeDate = document.getElementById('home-date');
+  const visitDate = document.getElementById('visit-date');
+  if (homeClk && visitClk) {
+    const home = getHome(), visit = getVisit();
+    homeClk.textContent = formatTime(home.tz);
+    visitClk.textContent = formatTime(visit.tz);
+    if (homeDate) homeDate.textContent = formatDate(home.tz);
+    if (visitDate) visitDate.textContent = formatDate(visit.tz);
+  }
+  // live date in header
+  const ld = document.getElementById('live-date');
+  if (ld) ld.textContent = new Date().toLocaleString('en-US', { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// ── INIT
+populateSelects();
+updateDashboard();
+setInterval(tickClocks, 1000);
+</script>
+</body>
+</html>
