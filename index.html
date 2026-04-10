@@ -1234,8 +1234,8 @@ function buildDashboard(weather) {
   const toCur = swapped ? home.currency : visit.currency;
   const rate = getRate(fromCur, toCur);
   const rateDisplay = rate >= 1000 ? rate.toFixed(0) : rate >= 100 ? rate.toFixed(1) : rate.toFixed(4);
-  const quickFromCurrency = swapped ? visit.currency : home.currency;
-  const quickToCurrency = swapped ? home.currency : visit.currency;
+  const quickFromCurrency = fromCur;
+  const quickToCurrency = toCur;
   const quickFromSymbol = swapped ? visit.symbol : home.symbol;
   const quickToSymbol = swapped ? home.symbol : visit.symbol;
   const phrases = visit.phrases && Object.keys(visit.phrases).length > 0 ? visit.phrases : null;
