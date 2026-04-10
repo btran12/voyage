@@ -1230,8 +1230,14 @@ function buildDashboard(weather) {
   const home = getHome(), visit = getVisit();
   const visa = getVisaStatus(home, visit);
   const tips = getPackingTips(home, visit);
-  const rate = getRate(home.currency, visit.currency);
+  const fromCur = swapped ? visit.currency : home.currency;
+  const toCur = swapped ? home.currency : visit.currency;
+  const rate = getRate(fromCur, toCur);
   const rateDisplay = rate >= 1000 ? rate.toFixed(0) : rate >= 100 ? rate.toFixed(1) : rate.toFixed(4);
+  const quickFromCurrency = swapped ? visit.currency : home.currency;
+  const quickToCurrency = swapped ? home.currency : visit.currency;
+  const quickFromSymbol = swapped ? visit.symbol : home.symbol;
+  const quickToSymbol = swapped ? home.symbol : visit.symbol;
   const phrases = visit.phrases && Object.keys(visit.phrases).length > 0 ? visit.phrases : null;
 
   // Weather render
@@ -1353,14 +1359,14 @@ function buildDashboard(weather) {
 
     <!-- Quick amounts -->
     <div class="card span-4">
-      <div class="card-label">Quick Reference — ${home.currency} → ${visit.currency}</div>
+      <div class="card-label">Quick Reference — ${quickFromCurrency} → ${quickToCurrency}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         ${[10,20,50,100,200,500].map(amt => {
           const converted = (amt * rate);
           const display = converted >= 1000 ? (converted/1000).toFixed(1)+'K' : converted >= 10 ? converted.toFixed(0) : converted.toFixed(2);
           return `<div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border-radius:6px;padding:8px 12px">
-            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted)">${home.symbol}${amt}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent)">${visit.symbol}${display}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted)">${quickFromSymbol}${amt}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent)">${quickToSymbol}${display}</span>
           </div>`;
         }).join('')}
       </div>
