@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vietnam Itinerary 2026 — Flight Progress</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+      --accent: #22d3ee;
+      --accent-2: #38bdf8;
+      --ok: #22c55e;
+      --border: rgba(148, 163, 184, 0.25);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top, #1e293b 0%, var(--bg) 48%);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 2vw + 1rem, 2.2rem);
+      font-weight: 700;
+    }
+
+    .sub {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    .trip-status {
+      margin-bottom: 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.55);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .flights {
+      display: grid;
+      gap: 14px;
+    }
+
+    .flight {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(2, 6, 23, 0.65), rgba(15, 23, 42, 0.65));
+      padding: 16px;
+    }
+
+    .route {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .airport {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .city {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-top: 2px;
+    }
+
+    .arrow {
+      color: var(--accent);
+      font-size: 1.2rem;
+      white-space: nowrap;
+    }
+
+    .progress-wrap {
+      background: rgba(30, 41, 59, 0.9);
+      border-radius: 999px;
+      height: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.6s ease;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 6px 14px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .arrived {
+      color: var(--ok);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Vietnam Itinerary 2026 — Flight Timeline</h1>
+    <p class="sub">Each flight shows progress toward arrival with live time remaining. Departure and arrival are displayed in each airport's local time zone.</p>
+    <section class="trip-status" id="trip-status">Loading trip timeline…</section>
+    <section class="flights" id="flights"></section>
+  </main>
+
+  <script>
+    const flights = [
+      {
+        id: 'VN-1',
+        fromAirport: 'SFO',
+        fromCity: 'San Francisco',
+        fromTz: 'America/Los_Angeles',
+        toAirport: 'ICN',
+        toCity: 'Seoul',
+        toTz: 'Asia/Seoul',
+        departureISO: '2026-06-12T11:25:00-07:00',
+        arrivalISO: '2026-06-13T16:45:00+09:00'
+      },
+      {
+        id: 'VN-2',
+        fromAirport: 'ICN',
+        fromCity: 'Seoul',
+        fromTz: 'Asia/Seoul',
+        toAirport: 'DAD',
+        toCity: 'Da Nang',
+        toTz: 'Asia/Ho_Chi_Minh',
+        departureISO: '2026-06-14T09:15:00+09:00',
+        arrivalISO: '2026-06-14T12:05:00+07:00'
+      },
+      {
+        id: 'VN-3',
+        fromAirport: 'DAD',
+        fromCity: 'Da Nang',
+        fromTz: 'Asia/Ho_Chi_Minh',
+        toAirport: 'SGN',
+        toCity: 'Ho Chi Minh City',
+        toTz: 'Asia/Ho_Chi_Minh',
+        departureISO: '2026-06-20T18:20:00+07:00',
+        arrivalISO: '2026-06-20T19:50:00+07:00'
+      }
+    ];
+
+    const flightsEl = document.getElementById('flights');
+    const tripStatusEl = document.getElementById('trip-status');
+
+    function fmtLocal(date, tz) {
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short'
+      }).format(date);
+    }
+
+    function fmtDuration(ms) {
+      if (ms <= 0) return '0m';
+      const totalMinutes = Math.ceil(ms / 60000);
+      const days = Math.floor(totalMinutes / (60 * 24));
+      const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+      const mins = totalMinutes % 60;
+      const parts = [];
+      if (days) parts.push(`${days}d`);
+      if (hours || days) parts.push(`${hours}h`);
+      parts.push(`${mins}m`);
+      return parts.join(' ');
+    }
+
+    function renderFlightCards() {
+      flightsEl.innerHTML = flights.map(flight => `
+        <article class="flight" id="${flight.id}">
+          <div class="route">
+            <div>
+              <div class="airport">${flight.fromAirport}</div>
+              <div class="city">${flight.fromCity}</div>
+            </div>
+            <div class="arrow">✈︎ →</div>
+            <div style="text-align:right">
+              <div class="airport">${flight.toAirport}</div>
+              <div class="city">${flight.toCity}</div>
+            </div>
+          </div>
+          <div class="progress-wrap"><div class="progress-bar" data-progress="${flight.id}"></div></div>
+          <div class="status" data-status="${flight.id}"></div>
+          <div class="meta">
+            <div><strong>Departure (local):</strong> <span data-departure="${flight.id}"></span></div>
+            <div><strong>Arrival (local):</strong> <span data-arrival="${flight.id}"></span></div>
+            <div><strong>Elapsed:</strong> <span data-elapsed="${flight.id}"></span></div>
+            <div><strong>Total flight time:</strong> <span data-total="${flight.id}"></span></div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function updateProgress() {
+      const now = new Date();
+      const tripStart = new Date(Math.min(...flights.map(f => new Date(f.departureISO).getTime())));
+
+      if (now < tripStart) {
+        tripStatusEl.textContent = `Trip starts in ${fmtDuration(tripStart - now)} (first departure: ${fmtLocal(tripStart, flights[0].fromTz)}).`;
+      } else {
+        tripStatusEl.textContent = `Trip is in progress or completed. Current time: ${fmtLocal(now, 'UTC')}.`;
+      }
+
+      flights.forEach(flight => {
+        const departure = new Date(flight.departureISO);
+        const arrival = new Date(flight.arrivalISO);
+        const totalMs = arrival - departure;
+        const elapsedMs = now - departure;
+        const remainingMs = arrival - now;
+        const progress = Math.max(0, Math.min(1, elapsedMs / totalMs));
+
+        const progressEl = document.querySelector(`[data-progress="${flight.id}"]`);
+        const statusEl = document.querySelector(`[data-status="${flight.id}"]`);
+        const departureEl = document.querySelector(`[data-departure="${flight.id}"]`);
+        const arrivalEl = document.querySelector(`[data-arrival="${flight.id}"]`);
+        const elapsedEl = document.querySelector(`[data-elapsed="${flight.id}"]`);
+        const totalEl = document.querySelector(`[data-total="${flight.id}"]`);
+
+        if (progressEl) progressEl.style.width = `${Math.round(progress * 100)}%`;
+        if (departureEl) departureEl.textContent = `${fmtLocal(departure, flight.fromTz)} (${flight.fromTz})`;
+        if (arrivalEl) arrivalEl.textContent = `${fmtLocal(arrival, flight.toTz)} (${flight.toTz})`;
+        if (elapsedEl) elapsedEl.textContent = now < departure ? '0m' : fmtDuration(Math.max(0, elapsedMs));
+        if (totalEl) totalEl.textContent = fmtDuration(totalMs);
+
+        if (!statusEl) return;
+
+        if (now < departure) {
+          statusEl.textContent = `Departs in ${fmtDuration(departure - now)} • ETA to arrive: ${fmtDuration(remainingMs)}`;
+          statusEl.classList.remove('arrived');
+        } else if (now >= departure && now < arrival) {
+          statusEl.textContent = `In the air • Estimated time remaining until arrival: ${fmtDuration(remainingMs)}`;
+          statusEl.classList.remove('arrived');
+        } else {
+          statusEl.textContent = `Arrived • Landed ${fmtDuration(now - arrival)} ago`;
+          statusEl.classList.add('arrived');
+        }
+      });
+    }
+
+    renderFlightCards();
+    updateProgress();
+    setInterval(updateProgress, 60000);
+  </script>
+</body>
+</html>
