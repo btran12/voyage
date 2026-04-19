@@ -14,6 +14,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Voyage — International Travel Dashboard | Currency, Weather, Time & Visa</title>
 
+<!-- ── PWA SUPPORT ── -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#9a6f2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Voyage">
+<link rel="apple-touch-icon" href="/voyage-og.png">
+
 <!-- ── PRIMARY SEO ── -->
 <meta name="description" content="Voyage is a free international travel dashboard. Get real-time currency conversion, dual time zones, live weather, visa requirements, emergency numbers, plug adapters, and instant phrase translation for 19 countries.">
 <meta name="keywords" content="international travel dashboard, currency converter, travel time zones, visa requirements, travel weather, travel phrases translator, plug adapter checker, emergency numbers abroad, travel tools, free travel app">
@@ -1647,6 +1655,19 @@ function tickClocks() {
 populateSelects();
 updateDashboard();
 setInterval(tickClocks, 1000);
+
+// ── SERVICE WORKER REGISTRATION
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('[Voyage PWA] Service Worker registered:', registration.scope);
+      })
+      .catch(error => {
+        console.log('[Voyage PWA] Service Worker registration failed:', error);
+      });
+  });
+}
 </script>
 </body>
 </html>

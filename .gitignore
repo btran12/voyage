@@ -1,0 +1,4 @@
+```
+# Service worker and manifest files are typically not ignored
+# as they are part of the web application source
+```
