@@ -1,0 +1,21 @@
+{
+  "name": "Voyage — International Travel Dashboard",
+  "short_name": "Voyage",
+  "description": "Free travel dashboard with real-time currency conversion, live weather, dual clocks, visa requirements, emergency numbers, and instant translation for 19 countries.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f2ec",
+  "theme_color": "#9a6f2e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "voyage-og.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["travel", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr"
+}
