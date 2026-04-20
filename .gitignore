@@ -2,3 +2,24 @@
 # Service worker and manifest files are typically not ignored
 # as they are part of the web application source
 ```
+# Ignore node_modules and build artifacts
+node_modules/
+dist/
+# Ignore environment variable files
+.env
+# Ignore log files
+logs/
+# Ignore IDE and editor specific files
+.vscode/
+.idea/
+.expo
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+# Ignore coverage reports
+coverage/
+# Ignore test result files
+test-results/
+# Ignore temporary files
+*.tmp
+*.log
