@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
+import * as Speech from 'expo-speech';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -7,14 +8,14 @@ import {
   Linking,
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View
 } from 'react-native';
-import { COUNTRIES, Country, WMO_DESC, WMO_ICONS } from './src/data/countries';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { COUNTRIES, Country, LANG_CODES, WMO_DESC, WMO_ICONS } from './src/data/countries';
 import {
   displayTemp,
   fetchExchangeRate,
@@ -48,15 +49,84 @@ type TranslationItem = {
   lang: string;
 };
 
+type PhraseCategory = {
+  title: string;
+  items: string[];
+};
+
 const sortedCountries = [...COUNTRIES].sort((a, b) => a.name.localeCompare(b.name));
 const quickAmounts = [10, 20, 50, 100, 200, 500];
+const storageKeys = {
+  home: 'voyage-home',
+  visit: 'voyage-visit',
+  amount: 'voyage-amount',
+  checklist: 'voyage-checklists',
+  visitedSpots: 'voyage-visited-spots',
+  translations: 'voyage-translation-history'
+};
+const storageKeyList = Object.values(storageKeys).filter((key): key is string => typeof key === 'string');
 const navItems: { key: ActivePage; label: string; icon: string }[] = [
   { key: 'home', label: 'Home', icon: '⌂' },
-  { key: 'currency', label: 'Currency', icon: '$' },
   { key: 'weather', label: 'Weather', icon: '☼' },
   { key: 'places', label: 'Places', icon: '◎' },
-  { key: 'translator', label: 'Translate', icon: '文' }
+  { key: 'translator', label: 'Translate', icon: '文' },
+  { key: 'currency', label: 'Currency', icon: '$' }
 ];
+
+const phraseCategories: PhraseCategory[] = [
+  {
+    title: 'Basics',
+    items: ['Hello', 'Thank you', 'Excuse me', 'Where is...']
+  },
+  {
+    title: 'Emergency',
+    items: ['I need help.', 'Please call emergency services.', 'Where is the nearest hospital?']
+  },
+  {
+    title: 'Transport',
+    items: ['How much is a taxi?', 'Please take me to my hotel.', 'Where is the train station?']
+  },
+  {
+    title: 'Food',
+    items: ['I have a food allergy.', 'The bill, please.', 'No meat, please.']
+  },
+  {
+    title: 'Hotel',
+    items: ['I have a reservation.', 'Can I check in?', 'Can you call a taxi?']
+  }
+];
+
+function getTripKey(origin: Country, destination: Country): string {
+  return `${origin.code}-${destination.code}`;
+}
+
+function getChecklistItems(origin: Country, destination: Country, tips: string[]): string[] {
+  const items = [
+    'Passport is valid for the full trip',
+    'Travel insurance is active',
+    'Offline maps are downloaded',
+    `Local emergency numbers saved for ${destination.name}`,
+    `Some ${destination.currency} cash is available`
+  ];
+
+  if (origin.plug !== destination.plug) items.push(`Packed Type ${destination.plug} plug adapter`);
+  if (Number.parseInt(origin.voltage, 10) !== Number.parseInt(destination.voltage, 10)) {
+    items.push(`Checked device voltage for ${destination.voltage}`);
+  }
+  if (origin.drives !== destination.drives) items.push(`Reviewed ${destination.drives}-side traffic habits`);
+  if (destination.visa.default !== 'free') items.push('Visa, ETA, or e-visa is confirmed');
+  tips.slice(0, 2).forEach((tip) => items.push(tip));
+
+  return Array.from(new Set(items));
+}
+
+function getSpeechLanguage(country: Country): string {
+  return LANG_CODES[country.code] ?? 'en';
+}
+
+function getPhraseText(country: Country, phrase: string, translations: Record<string, string>): string {
+  return country.phrases[phrase]?.[0] ?? translations[`${country.code}:${phrase}`] ?? phrase;
+}
 
 function formatForecastDay(date: string): string {
   const parsed = new Date(`${date}T12:00:00`);
@@ -134,9 +204,14 @@ function EmergencyButton({ label, number }: { label: string; number: string }) {
       onPress={() => {
         if (dial) Linking.openURL(`tel:${dial}`);
       }}
+      onLongPress={() => {
+        Clipboard.setStringAsync(number);
+        Alert.alert('Copied', `${label} number copied.`);
+      }}
     >
       <Text style={styles.emergencyNumber}>{number}</Text>
       <Text style={styles.emergencyLabel}>{label}</Text>
+      <Text style={styles.emergencyHint}>Tap call, hold copy</Text>
     </Pressable>
   );
 }
@@ -145,6 +220,7 @@ export default function App() {
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [origin, setOrigin] = useState(COUNTRIES.find((country) => country.code === 'US') ?? COUNTRIES[0]);
   const [destination, setDestination] = useState(COUNTRIES.find((country) => country.code === 'VN') ?? COUNTRIES[1]);
+  const [hasLoadedSavedCountries, setHasLoadedSavedCountries] = useState(false);
   const [amount, setAmount] = useState('100');
   const [swapped, setSwapped] = useState(false);
   const [liveRate, setLiveRate] = useState<number | null>(null);
@@ -157,25 +233,55 @@ export default function App() {
   const [translationOutput, setTranslationOutput] = useState('');
   const [translationLoading, setTranslationLoading] = useState(false);
   const [translationHistory, setTranslationHistory] = useState<TranslationItem[]>([]);
+  const [phrasebookTranslations, setPhrasebookTranslations] = useState<Record<string, string>>({});
+  const [phrasebookLoading, setPhrasebookLoading] = useState(false);
+  const [checklistState, setChecklistState] = useState<Record<string, string[]>>({});
+  const [visitedSpots, setVisitedSpots] = useState<Record<string, string[]>>({});
   const [, setClockTick] = useState(0);
 
   useEffect(() => {
-    AsyncStorage.multiGet(['voyage-home', 'voyage-visit']).then((pairs) => {
-      const homeCode = pairs.find(([key]) => key === 'voyage-home')?.[1];
-      const visitCode = pairs.find(([key]) => key === 'voyage-visit')?.[1];
-      const savedHome = COUNTRIES.find((country) => country.code === homeCode);
-      const savedVisit = COUNTRIES.find((country) => country.code === visitCode);
-      if (savedHome) setOrigin(savedHome);
-      if (savedVisit) setDestination(savedVisit);
-    });
+    AsyncStorage.multiGet(storageKeyList)
+      .then((pairs) => {
+        const homeCode = pairs.find(([key]) => key === storageKeys.home)?.[1];
+        const visitCode = pairs.find(([key]) => key === storageKeys.visit)?.[1];
+        const savedAmount = pairs.find(([key]) => key === storageKeys.amount)?.[1];
+        const savedChecklist = pairs.find(([key]) => key === storageKeys.checklist)?.[1];
+        const savedSpots = pairs.find(([key]) => key === storageKeys.visitedSpots)?.[1];
+        const savedTranslations = pairs.find(([key]) => key === storageKeys.translations)?.[1];
+        const savedHome = COUNTRIES.find((country) => country.code === homeCode);
+        const savedVisit = COUNTRIES.find((country) => country.code === visitCode);
+        if (savedHome) setOrigin(savedHome);
+        if (savedVisit) setDestination(savedVisit);
+        if (savedAmount) setAmount(savedAmount);
+        if (savedChecklist) setChecklistState(JSON.parse(savedChecklist));
+        if (savedSpots) setVisitedSpots(JSON.parse(savedSpots));
+        if (savedTranslations) setTranslationHistory(JSON.parse(savedTranslations));
+      })
+      .finally(() => setHasLoadedSavedCountries(true));
   }, []);
 
   useEffect(() => {
-    AsyncStorage.multiSet([
-      ['voyage-home', origin.code],
-      ['voyage-visit', destination.code]
-    ]);
-  }, [destination.code, origin.code]);
+    if (!hasLoadedSavedCountries) return;
+
+    const valuesToSave = [
+      [storageKeys.home, origin.code],
+      [storageKeys.visit, destination.code],
+      [storageKeys.amount, amount],
+      [storageKeys.checklist, JSON.stringify(checklistState)],
+      [storageKeys.visitedSpots, JSON.stringify(visitedSpots)],
+      [storageKeys.translations, JSON.stringify(translationHistory)]
+    ].filter(([key]) => typeof key === 'string' && key.length > 0) as [string, string][];
+
+    AsyncStorage.multiSet(valuesToSave);
+  }, [
+    amount,
+    checklistState,
+    destination.code,
+    hasLoadedSavedCountries,
+    origin.code,
+    translationHistory,
+    visitedSpots
+  ]);
 
   useEffect(() => {
     let alive = true;
@@ -206,7 +312,14 @@ export default function App() {
   const converted = numericAmount * rate;
   const visa = useMemo(() => getVisaStatus(origin, destination), [origin, destination]);
   const packingTips = useMemo(() => getPackingTips(origin, destination), [origin, destination]);
-  const phrases = Object.entries(destination.phrases);
+  const phrases = useMemo(() => Object.entries(destination.phrases), [destination]);
+  const neededPhraseKeys = useMemo(
+    () => Array.from(new Set([
+      ...phraseCategories.flatMap((category) => category.items),
+      ...phrases.map(([phrase]) => phrase)
+    ])),
+    [phrases]
+  );
   const currentWeather = weather?.current;
   const weatherCode = currentWeather?.weathercode ?? -1;
   const dailyForecast = weather?.daily?.time
@@ -214,9 +327,30 @@ export default function App() {
       date,
       code: weather.daily?.weathercode[index] ?? -1,
       max: weather.daily?.temperature_2m_max[index],
-      min: weather.daily?.temperature_2m_min[index]
+      min: weather.daily?.temperature_2m_min[index],
+      rain: weather.daily?.precipitation_probability_max?.[index],
+      uv: weather.daily?.uv_index_max?.[index]
     }))
     .slice(1, 4) ?? [];
+  const tripKey = getTripKey(origin, destination);
+  const checklistItems = useMemo(
+    () => getChecklistItems(origin, destination, packingTips),
+    [destination, origin, packingTips]
+  );
+  const completedChecklistItems = checklistState[tripKey] ?? [];
+  const currentVisitedSpots = visitedSpots[destination.code] ?? [];
+  const missingPhrasebookTranslations = useMemo(
+    () => [origin, destination].flatMap((country) => neededPhraseKeys
+      .filter(() => getSpeechLanguage(country) !== 'en')
+      .filter((phrase) => !country.phrases[phrase] && !phrasebookTranslations[`${country.code}:${phrase}`])
+      .map((phrase) => ({ country, phrase }))),
+    [destination, neededPhraseKeys, origin, phrasebookTranslations]
+  );
+  const travelWeatherNotes = [
+    (dailyForecast[0]?.rain ?? 0) >= 50 ? 'Rain likely soon. Pack a light shell or umbrella.' : null,
+    (dailyForecast[0]?.uv ?? 0) >= 7 ? 'High UV expected. Use sunscreen and stay hydrated.' : null,
+    currentWeather && currentWeather.windspeed_10m >= 30 ? 'Windy conditions may affect ferries or outdoor plans.' : null
+  ].filter(Boolean);
 
   useEffect(() => {
     let alive = true;
@@ -235,6 +369,85 @@ export default function App() {
       alive = false;
     };
   }, [from.currency, to.currency]);
+
+  useEffect(() => {
+    let alive = true;
+
+    if (missingPhrasebookTranslations.length === 0) {
+      setPhrasebookLoading(false);
+      return () => {
+        alive = false;
+      };
+    }
+
+    setPhrasebookLoading(true);
+    Promise.all(
+      missingPhrasebookTranslations.map(async ({ country, phrase }) => {
+        try {
+          const translated = await translateToDestination(phrase, country);
+          return [country.code, phrase, translated] as const;
+        } catch {
+          return [country.code, phrase, phrase] as const;
+        }
+      })
+    ).then((pairs) => {
+      if (!alive) return;
+      setPhrasebookTranslations((translations) => {
+        const next = { ...translations };
+        pairs.forEach(([countryCode, phrase, translated]) => {
+          next[`${countryCode}:${phrase}`] = translated;
+        });
+        return next;
+      });
+      setPhrasebookLoading(false);
+    });
+
+    return () => {
+      alive = false;
+    };
+  }, [missingPhrasebookTranslations]);
+
+  function toggleChecklistItem(item: string) {
+    setChecklistState((state) => {
+      const current = state[tripKey] ?? [];
+      const next = current.includes(item)
+        ? current.filter((doneItem) => doneItem !== item)
+        : [...current, item];
+
+      return { ...state, [tripKey]: next };
+    });
+  }
+
+  function handleTargetAmountChange(value: string) {
+    const targetValue = parseCurrencyAmount(value);
+    const sourceValue = rate > 0 ? targetValue / rate : 0;
+    setAmount(formatCurrencyInput(sourceValue.toFixed(2)));
+  }
+
+  async function copyText(text: string, message = 'Copied to clipboard.') {
+    await Clipboard.setStringAsync(text);
+    Alert.alert('Copied', message);
+  }
+
+  function speakText(text: string, country = destination) {
+    Speech.stop();
+    Speech.speak(text, { language: getSpeechLanguage(country) });
+  }
+
+  function openMap(query: string) {
+    Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`);
+  }
+
+  function toggleVisitedSpot(spotName: string) {
+    setVisitedSpots((spots) => {
+      const current = spots[destination.code] ?? [];
+      const next = current.includes(spotName)
+        ? current.filter((name) => name !== spotName)
+        : [...current, spotName];
+
+      return { ...spots, [destination.code]: next };
+    });
+  }
 
   async function translate() {
     const text = translationInput.trim();
@@ -264,8 +477,9 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text style={styles.brand}>VOYAGE</Text>
           <Text style={styles.subtitle}>International Travel Dashboard</Text>
@@ -354,19 +568,40 @@ export default function App() {
                 <EmergencyButton label="Fire" number={destination.emergency.fire} />
                 <EmergencyButton label="Tourist Helpline" number={destination.emergency.tourist} />
               </View>
+              <View style={styles.actionRow}>
+                <Pressable
+                  style={styles.secondaryButton}
+                  onPress={() => copyText('I need help. Please call emergency services.', 'Emergency phrase copied.')}
+                >
+                  <Text style={styles.secondaryButtonText}>Copy help phrase</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.secondaryButton}
+                  onPress={() => openMap(`${origin.name} embassy in ${destination.name}`)}
+                >
+                  <Text style={styles.secondaryButtonText}>Find embassy</Text>
+                </Pressable>
+              </View>
             </Card>
 
             <Card title={`Essential Phrases - ${destination.lang}`}>
               {phrases.length > 0 ? (
-                phrases.map(([english, [local, pronunciation]]) => (
-                  <View key={english} style={styles.phraseRow}>
-                    <Text style={styles.phraseEnglish}>{english}</Text>
-                    <View style={styles.phraseLocalWrap}>
-                      <Text style={styles.phraseLocal}>{local}</Text>
-                      <Text style={styles.phrasePronunciation}>{pronunciation}</Text>
-                    </View>
-                  </View>
-                ))
+                phrases.map(([english, [local, pronunciation]]) => {
+                  const originPhrase = getPhraseText(origin, english, phrasebookTranslations);
+
+                  return (
+                    <Pressable key={english} style={styles.phraseRow} onPress={() => speakText(local)}>
+                      <View style={styles.phraseSourceWrap}>
+                        <Text style={styles.phraseEnglish}>{originPhrase}</Text>
+                        <Text style={styles.phraseSourceLabel}>{origin.lang}</Text>
+                      </View>
+                      <View style={styles.phraseLocalWrap}>
+                        <Text style={styles.phraseLocal}>{local}</Text>
+                        <Text style={styles.phrasePronunciation}>{pronunciation}</Text>
+                      </View>
+                    </Pressable>
+                  );
+                })
               ) : (
                 <Text style={styles.bodyText}>English is widely spoken or phrases are not available for this destination.</Text>
               )}
@@ -379,6 +614,18 @@ export default function App() {
                   <Text style={styles.tipText}>{tip}</Text>
                 </View>
               ))}
+            </Card>
+
+            <Card title="Trip Checklist">
+              {checklistItems.map((item) => {
+                const done = completedChecklistItems.includes(item);
+                return (
+                  <Pressable key={item} style={styles.checkRow} onPress={() => toggleChecklistItem(item)}>
+                    <Text style={styles.checkBox}>{done ? '✓' : ''}</Text>
+                    <Text style={[styles.checkText, done && styles.checkTextDone]}>{item}</Text>
+                  </Pressable>
+                );
+              })}
             </Card>
           </>
         )}
@@ -399,6 +646,17 @@ export default function App() {
                   style={styles.currencyInput}
                 />
               </View>
+              <View style={styles.presetRow}>
+                {[25, 50, 100, 250].map((preset) => (
+                  <Pressable
+                    key={preset}
+                    style={styles.presetButton}
+                    onPress={() => setAmount(formatCurrencyInput(String(preset)))}
+                  >
+                    <Text style={styles.presetText}>{`${from.symbol}${preset}`}</Text>
+                  </Pressable>
+                ))}
+              </View>
               <View style={styles.rateRow}>
                 <Text style={styles.rateText}>{`1 ${from.currency} = ${formatRate(rate)} ${to.currency}`}</Text>
                 <Pressable style={styles.swapButton} onPress={() => setSwapped((value) => !value)}>
@@ -417,7 +675,12 @@ export default function App() {
                   <Text style={styles.currencyCode}>{to.currency}</Text>
                   <Text style={styles.muted}>{to.name}</Text>
                 </View>
-                <Text style={styles.resultValue}>{`${to.symbol}${formatCurrencyAmount(converted)}`}</Text>
+                <TextInput
+                  keyboardType="decimal-pad"
+                  value={formatCurrencyAmount(converted)}
+                  onChangeText={handleTargetAmountChange}
+                  style={styles.currencyInput}
+                />
               </View>
             </Card>
 
@@ -478,6 +741,12 @@ export default function App() {
                       <Text style={styles.statLabel}>Feels Like</Text>
                     </View>
                   </View>
+                  <View style={styles.travelConditions}>
+                    <Text style={styles.forecastTitle}>Travel Conditions</Text>
+                    {(travelWeatherNotes.length > 0 ? travelWeatherNotes : ['No major weather concerns in the current forecast.']).map((note) => (
+                      <Text key={note} style={styles.bodyText}>{note}</Text>
+                    ))}
+                  </View>
                   {dailyForecast.length > 0 && (
                     <View style={styles.forecastList}>
                       <Text style={styles.forecastTitle}>Next Few Days</Text>
@@ -491,6 +760,7 @@ export default function App() {
                           <Text style={styles.forecastTemp}>
                             {`${displayTemp(day.max ?? 0, weatherUnit)} / ${displayTemp(day.min ?? 0, weatherUnit)}`}
                           </Text>
+                          <Text style={styles.forecastMeta}>{`Rain ${day.rain ?? 0}% · UV ${Math.round(day.uv ?? 0)}`}</Text>
                         </View>
                       ))}
                     </View>
@@ -506,11 +776,44 @@ export default function App() {
         {activePage === 'places' && (
           <>
             <SectionTitle>Top Places to Visit</SectionTitle>
+            <Card title={`Visited Cities - ${destination.name}`}>
+              {currentVisitedSpots.length > 0 ? (
+                <View style={styles.wrapRow}>
+                  {currentVisitedSpots.map((spotName) => (
+                    <Pressable
+                      key={spotName}
+                      style={styles.visitedChip}
+                      onPress={() => toggleVisitedSpot(spotName)}
+                    >
+                      <Text style={styles.visitedChipText}>{spotName}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : (
+                <Text style={styles.placeholderText}>Mark places as visited and they will appear here.</Text>
+              )}
+            </Card>
             <Card title={`Must-See Destinations - ${destination.name}`}>
               {destination.spots.map((spot) => (
                 <View key={`${spot.name}-${spot.desc}`} style={styles.spotItem}>
                   <Text style={styles.spotName}>{`${spot.emoji} ${spot.name}`}</Text>
                   <Text style={styles.bodyText}>{spot.desc}</Text>
+                  <View style={styles.actionRow}>
+                    <Pressable
+                      style={styles.secondaryButton}
+                      onPress={() => openMap(`${spot.name}, ${destination.name}`)}
+                    >
+                      <Text style={styles.secondaryButtonText}>Open map</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.secondaryButton}
+                      onPress={() => toggleVisitedSpot(spot.name)}
+                    >
+                      <Text style={styles.secondaryButtonText}>
+                        {currentVisitedSpots.includes(spot.name) ? 'Visited' : 'Mark visited'}
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
               ))}
             </Card>
@@ -520,6 +823,43 @@ export default function App() {
         {activePage === 'translator' && (
           <>
             <SectionTitle>Translator</SectionTitle>
+            <Card title="Phrasebook">
+              {phrasebookLoading && <Text style={styles.placeholderText}>Translating phrasebook...</Text>}
+              {phraseCategories.map((category) => (
+                <View key={category.title} style={styles.phraseCategory}>
+                  <Text style={styles.phraseCategoryTitle}>{category.title}</Text>
+                  {category.items.map((phrase) => {
+                    const originPhrase = getPhraseText(origin, phrase, phrasebookTranslations);
+                    const localPhrase = getPhraseText(destination, phrase, phrasebookTranslations);
+                    const pronunciation = destination.phrases[phrase]?.[1];
+
+                    return (
+                      <Pressable
+                        key={`${category.title}-${phrase}`}
+                        style={styles.phrasebookRow}
+                        onPress={() => speakText(localPhrase)}
+                      >
+                        <View style={styles.phrasebookText}>
+                          <Text style={styles.phraseSourceLabel}>{origin.lang}</Text>
+                          <Text style={styles.bodyText}>{originPhrase}</Text>
+                          <Text style={styles.phraseSourceLabel}>{destination.lang}</Text>
+                          <Text style={styles.phraseLocal}>{localPhrase}</Text>
+                          {!!pronunciation && <Text style={styles.phrasePronunciation}>{pronunciation}</Text>}
+                        </View>
+                        <View style={styles.phraseActions}>
+                          <Pressable style={styles.tinyButton} onPress={() => copyText(localPhrase)}>
+                            <Text style={styles.tinyButtonText}>Copy</Text>
+                          </Pressable>
+                          <Pressable style={styles.tinyButton} onPress={() => speakText(localPhrase)}>
+                            <Text style={styles.tinyButtonText}>Speak</Text>
+                          </Pressable>
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              ))}
+            </Card>
             <Card title={`Type & Translate - English > ${destination.lang}`}>
               <TextInput
                 multiline
@@ -544,6 +884,11 @@ export default function App() {
                   {translationOutput || 'Translation will appear here. Tap the result to copy it.'}
                 </Text>
               </Pressable>
+              {!!translationOutput && (
+                <Pressable style={styles.secondaryButton} onPress={() => speakText(translationOutput)}>
+                  <Text style={styles.secondaryButtonText}>Speak translation</Text>
+                </Pressable>
+              )}
             </Card>
 
             <Card title="Recent Translations">
@@ -556,6 +901,14 @@ export default function App() {
                   >
                     <Text style={styles.historyEnglish}>{item.en}</Text>
                     <Text style={styles.historyLocal}>{`${item.local} (${item.lang})`}</Text>
+                    <View style={styles.actionRow}>
+                      <Pressable style={styles.tinyButton} onPress={() => copyText(item.local)}>
+                        <Text style={styles.tinyButtonText}>Copy</Text>
+                      </Pressable>
+                      <Pressable style={styles.tinyButton} onPress={() => speakText(item.local)}>
+                        <Text style={styles.tinyButtonText}>Speak</Text>
+                      </Pressable>
+                    </View>
                   </Pressable>
                 ))
               ) : (
@@ -571,24 +924,27 @@ export default function App() {
             Rates approximate - Weather by Open-Meteo - Translation by MyMemory - Verify visas officially
           </Text>
         </View>
-      </ScrollView>
+        </ScrollView>
 
-      <View style={styles.bottomNav}>
-        {navItems.map((item) => {
-          const active = activePage === item.key;
-          return (
-            <Pressable
-              key={item.key}
-              style={[styles.navItem, active && styles.navItemActive]}
-              onPress={() => setActivePage(item.key)}
-            >
-              <Text style={[styles.navIcon, active && styles.navTextActive]}>{item.icon}</Text>
-              <Text style={[styles.navLabel, active && styles.navTextActive]}>{item.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </SafeAreaView>
+        <SafeAreaView style={styles.bottomSafeArea} edges={['bottom']}>
+          <View style={styles.bottomNav}>
+            {navItems.map((item) => {
+              const active = activePage === item.key;
+              return (
+                <Pressable
+                  key={item.key}
+                  style={[styles.navItem, active && styles.navItemActive]}
+                  onPress={() => setActivePage(item.key)}
+                >
+                  <Text style={[styles.navIcon, active && styles.navTextActive]}>{item.icon}</Text>
+                  <Text style={[styles.navLabel, active && styles.navTextActive]}>{item.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -707,6 +1063,14 @@ const styles = StyleSheet.create({
   rateRow: { alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'center' },
   rateText: { color: colors.muted, flex: 1, fontSize: 12, textAlign: 'center' },
   rateSource: { color: colors.muted, fontSize: 10, lineHeight: 14, textAlign: 'center' },
+  presetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  presetButton: {
+    backgroundColor: colors.surface2,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8
+  },
+  presetText: { color: colors.text, fontSize: 12, fontWeight: '600' },
   swapButton: {
     alignItems: 'center',
     borderColor: colors.border,
@@ -757,6 +1121,7 @@ const styles = StyleSheet.create({
   statBox: { alignItems: 'center', backgroundColor: colors.surface2, borderRadius: 8, flex: 1, padding: 10 },
   statValue: { color: colors.text, fontSize: 14, fontVariant: ['tabular-nums'], fontWeight: '600' },
   statLabel: { color: colors.muted, fontSize: 9, letterSpacing: 1, marginTop: 4, textTransform: 'uppercase' },
+  travelConditions: { backgroundColor: colors.surface2, borderRadius: 8, gap: 6, padding: 10 },
   forecastList: { gap: 8, marginTop: 2 },
   forecastTitle: { color: colors.muted, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' },
   forecastRow: {
@@ -771,8 +1136,59 @@ const styles = StyleSheet.create({
   forecastInfo: { flex: 1, minWidth: 0 },
   forecastDay: { color: colors.text, fontSize: 14, fontWeight: '600' },
   forecastTemp: { color: colors.text, fontSize: 13, fontVariant: ['tabular-nums'], fontWeight: '600' },
+  forecastMeta: { color: colors.muted, fontSize: 11 },
   twoColumn: { gap: 14 },
   largeIcon: { color: colors.accent, fontSize: 22, fontWeight: '600', textAlign: 'center' },
+  actionButton: {
+    alignItems: 'center',
+    backgroundColor: colors.accent,
+    borderRadius: 8,
+    paddingVertical: 12
+  },
+  actionButtonText: { color: colors.surface, fontSize: 13, fontWeight: '700' },
+  secondaryButton: {
+    alignItems: 'center',
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 9
+  },
+  secondaryButtonText: { color: colors.text, fontSize: 12, fontWeight: '600' },
+  actionRow: { flexDirection: 'row', gap: 8 },
+  wrapRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  routeChip: {
+    backgroundColor: colors.surface2,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8
+  },
+  routeChipText: { color: colors.text, fontSize: 12, fontWeight: '600' },
+  visitedChip: {
+    backgroundColor: '#eef7ee',
+    borderColor: '#bedec0',
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 8
+  },
+  visitedChipText: { color: colors.green, fontSize: 12, fontWeight: '700' },
+  checkRow: { alignItems: 'center', flexDirection: 'row', gap: 10 },
+  checkBox: {
+    borderColor: colors.border,
+    borderRadius: 6,
+    borderWidth: 1,
+    color: colors.accent,
+    fontSize: 13,
+    fontWeight: '700',
+    height: 24,
+    lineHeight: 22,
+    textAlign: 'center',
+    width: 24
+  },
+  checkText: { color: colors.text, flex: 1, fontSize: 13, lineHeight: 20 },
+  checkTextDone: { color: colors.muted, textDecorationLine: 'line-through' },
   emergencyGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   emergencyItem: {
     backgroundColor: colors.surface2,
@@ -784,6 +1200,7 @@ const styles = StyleSheet.create({
   },
   emergencyNumber: { color: colors.danger, fontSize: 20, fontVariant: ['tabular-nums'] },
   emergencyLabel: { color: colors.muted, fontSize: 10, letterSpacing: 1, marginTop: 2, textTransform: 'uppercase' },
+  emergencyHint: { color: colors.muted, fontSize: 9, marginTop: 6 },
   phraseRow: {
     alignItems: 'center',
     backgroundColor: colors.surface2,
@@ -793,10 +1210,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 12
   },
-  phraseEnglish: { color: colors.muted, flex: 1, fontSize: 12 },
+  phraseSourceWrap: { flex: 1, gap: 3 },
+  phraseEnglish: { color: colors.text, fontSize: 13 },
+  phraseSourceLabel: { color: colors.muted, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase' },
   phraseLocalWrap: { flex: 1.4 },
   phraseLocal: { color: colors.text, fontSize: 16, textAlign: 'right' },
   phrasePronunciation: { color: colors.accent, fontSize: 11, fontStyle: 'italic', textAlign: 'right' },
+  phraseCategory: { gap: 8 },
+  phraseCategoryTitle: { color: colors.accent, fontSize: 12, fontWeight: '700', textTransform: 'uppercase' },
+  phrasebookRow: {
+    alignItems: 'center',
+    backgroundColor: colors.surface2,
+    borderRadius: 8,
+    flexDirection: 'row',
+    gap: 10,
+    padding: 10
+  },
+  phrasebookText: { flex: 1, gap: 3 },
+  phraseActions: { gap: 6 },
+  tinyButton: {
+    alignItems: 'center',
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 6
+  },
+  tinyButtonText: { color: colors.text, fontSize: 11, fontWeight: '600' },
   tipRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 10 },
   tipDot: { backgroundColor: colors.accent, borderRadius: 3, height: 6, marginTop: 7, width: 6 },
   tipText: { color: colors.muted, flex: 1, fontSize: 13, lineHeight: 20 },
@@ -829,6 +1269,7 @@ const styles = StyleSheet.create({
   },
   statusText: { color: colors.muted, fontSize: 10, lineHeight: 14, textAlign: 'center' },
   statusRoute: { color: colors.accent, fontSize: 12, fontWeight: '600', textAlign: 'center' },
+  bottomSafeArea: { backgroundColor: colors.surface },
   bottomNav: {
     backgroundColor: colors.surface,
     borderTopColor: colors.border,

@@ -21,6 +21,8 @@ export type WeatherResult = {
     weathercode: number[];
     temperature_2m_max: number[];
     temperature_2m_min: number[];
+    precipitation_probability_max?: number[];
+    uv_index_max?: number[];
   };
 };
 
@@ -63,7 +65,7 @@ export function getTimeDiff(homeTz: string, visitTz: string): string {
     const visit = getZonedTimestamp(now, visitTz);
     const hours = Math.round((visit - home) / 3600000);
     if (!Number.isFinite(hours)) return '?';
-    if (hours === 0) return 'Same time';
+    if (hours === 0) return '+0h';
     return `${hours > 0 ? '+' : ''}${hours}h`;
   } catch {
     return '?';
@@ -236,7 +238,7 @@ export async function fetchWeather(countryCode: string): Promise<WeatherResult |
   if (!coord) return null;
 
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lon}&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lon}&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max&timezone=auto&forecast_days=4`;
     const response = await fetch(url);
     const data = await response.json();
     return { ...data, city: coord.city };
@@ -255,7 +257,7 @@ export function displayTemp(celsius: number, unit: 'C' | 'F'): string {
 
 export async function translateToDestination(text: string, visit: Country): Promise<string> {
   const targetLang = LANG_CODES[visit.code] ?? 'en';
-  if (targetLang === 'en') return 'The destination language is English. No translation needed.';
+  if (targetLang === 'en') return text;
 
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`;
   const response = await fetch(url);

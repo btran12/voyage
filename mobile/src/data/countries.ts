@@ -686,7 +686,7 @@ export const COUNTRIES: Country[] = [
     "airport": "YYZ",
     "visa": {
       "default": "voa",
-      "text": "eTA required for visa-exempt foreign nationals flying to Canada (CAD $7). US citizens exempt. No visa for many countries.",
+      "text": "ETA required for visa-exempt foreign nationals flying to Canada (CAD $7). US citizens exempt. No visa for many countries.",
       "days": 180
     },
     "emergency": {

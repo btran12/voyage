@@ -1181,7 +1181,7 @@ function getTimeDiff(tz1, tz2) {
     const t2 = new Date(now.toLocaleString('en-US', { timeZone: tz2 }));
     const diffH = (t2 - t1) / 3600000;
     const h = Math.round(diffH);
-    if (h === 0) return 'Same time';
+    if (h === 0) return '+0h';
     return `${h > 0 ? '+' : ''}${h}h`;
   } catch { return '?'; }
 }
